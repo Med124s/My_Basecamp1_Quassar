@@ -134,8 +134,8 @@ node server.js
    - Submit to create the project
 
 4. **Managing Projects**
-   ![Project Overview page](./screenshot/Manage_Project.png)
 
+    ![Project Overview](./screenshot/Manage_Project.png)
    - Click on any project to view details
    - Edit project information and assignments
    - Delete projects (owners and admins only)
