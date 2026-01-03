@@ -71,6 +71,9 @@ Follow these steps to set up MyBaseCamp1 on your local machine:
 ### Step 1: Clone the Repository
 
 ```bash
+# My Git (Mohamed Ben-yghil)
+git clone https://github.com/Med124s/My_Basecamp1_Quassar?tab=readme-ov-file
+
 # Qwasar Git
 git clone https://git.us.qwasar.io/my_basecamp_1_200773_9nmm6_/my_basecamp_1
 
