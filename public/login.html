@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Login | MyBasecamp</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="auth-container">
+      <form id="loginForm" class="auth-form">
+        <h2>Sign In</h2>
+
+        <div class="input-group">
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="Email address"
+            required
+          />
+          <small class="error-text"></small>
+        </div>
+
+        <div class="input-group">
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Password"
+            required
+          />
+          <small class="error-text"></small>
+        </div>
+
+        <div id="formMessage" class="form-message"></div>
+
+        <button type="submit" id="loginBtn" class="btn btn-primary">
+          Login
+        </button>
+
+        <p class="switch">
+          Don't have an account? <a href="register.html">Create one</a>
+        </p>
+      </form>
+    </div>
+
+    <script src="js/auth-validation.js"></script>
+  </body>
+</html>

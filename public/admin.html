@@ -1,0 +1,120 @@
+<!-- <!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Panel</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<h2 style="text-align:center">Admin Panel</h2>
+
+<div class="container">
+  <table class="table" id="usersTable"></table>
+</div>
+
+<script>
+fetch("/users")
+  .then(res => res.json())
+  .then(users => {
+    const table = document.getElementById("usersTable");
+    table.innerHTML = `
+      <tr><th>Name</th><th>Email</th><th>Role</th><th>Actions</th></tr>
+    `;
+    users.forEach(u => {
+      table.innerHTML += `
+        <tr>
+          <td>${u.name}</td>
+          <td>${u.email}</td>
+          <td>${u.isAdmin ? "ADMIN" : "USER"}</td>
+          <td>
+            ${u.isAdmin === "ADMIN"
+              ? `<button onclick="removeAdmin(${u.id})">Remove Admin</button>`
+              : `<button onclick="setAdmin(${u.id})">Set Admin</button>`}
+            <button onclick="deleteUser(${u.id})">Delete</button>
+          </td>
+        </tr>`;
+    });
+  });
+
+function setAdmin(id) {
+  fetch(`/users/${id}/admin`, { method: "PUT" }).then(()=>location.reload());
+}
+function removeAdmin(id) {
+  fetch(`/users/${id}/admin`, { method: "DELETE" }).then(()=>location.reload());
+}
+function deleteUser(id) {
+  fetch(`/users/${id}`, { method: "DELETE" }).then(()=>location.reload());
+}
+</script>
+
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Panel</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<h2 style="text-align:center">Admin Panel</h2>
+
+<div class="container">
+  <table class="table" id="usersTable"></table>
+</div>
+
+<script>
+fetch("/users")
+  .then(res => res.json())
+  .then(data => {
+    const users = data.users; // ✅ correct
+    const table = document.getElementById("usersTable");
+
+    table.innerHTML = `
+      <tr>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Actions</th>
+      </tr>
+    `;
+
+    users.forEach(u => {
+      table.innerHTML += `
+        <tr>
+          <td>${u.username}</td>
+          <td>${u.email}</td>
+          <td>${u.role ? "ADMIN" : "USER"}</td>
+          <td>
+            ${
+              u.role
+                ? `<button onclick="removeAdmin(${u.id})">Remove Admin</button>`
+                : `<button onclick="setAdmin(${u.id})">Set Admin</button>`
+            }
+            <button onclick="deleteUser(${u.id})">Delete</button>
+          </td>
+        </tr>
+      `;
+    });
+  });
+
+function setAdmin(id) {
+  fetch(`/users/${id}/admin`, { method: "PUT" })
+    .then(() => location.reload());
+}
+
+function removeAdmin(id) {
+  fetch(`/users/${id}/admin`, { method: "DELETE" })
+    .then(() => location.reload());
+}
+
+function deleteUser(id) {
+  fetch(`/users/${id}`, { method: "DELETE" })
+    .then(() => location.reload());
+}
+</script>
+
+</body>
+</html>
