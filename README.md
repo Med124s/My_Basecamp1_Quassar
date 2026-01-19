@@ -1,4 +1,5 @@
 # Welcome to My Basecamp 1
+
 ---
 
 ## Task
@@ -18,23 +19,36 @@ The challenge is to implement full-stack functionality (frontend + backend + dat
 ## Description
 
 **Solution**
-Frontend: HTML, CSS, and JavaScript (modals, forms, validation).
-Backend: Node.js + Express.js REST API for authentication, users, and projects.
-Database: MongoDB or PostgreSQL for storing users and projects.
-Authentication & Authorization: JWT or session-based; role-based access for admins.
-UX Features:
-Modals for project creation/editing.
-Alerts and confirmation messages for delete actions.
-Input validation on login and registration forms.
-Pagination for projects.
+This project is a web-based project management application called **MyBasecamp**, featuring both frontend and backend components.
+**Frontend:**
 
-![Alt Regitration form](./screenshot/Screen-01.png)
+- Built with **HTML, CSS, and JavaScript**.
+- Dynamic **modals** for creating and editing projects and users.
+- **Form validation** on registration, login, and CRUD forms.
+- **Alerts and confirmation dialogs** for delete actions.
+- Pagination for projects and users.
+
+**Backend:**
+
+- Developed with **Node.js** and **Express.js**.
+- Provides a **REST API** for authentication, users, and project management.
+- Implements **role-based access control**: only admins can manage users.
+- Authentication via **session-based login**.
+- Database interactions handled with **Sequelize ORM** and **SQLite**.
+  **Key Features:**
+- User registration and login with secure password hashing.
+- Admins can **create, update, view, and delete users**.
+- Users can **create and manage their own projects**, while admins can manage all projects.
+- Real-time feedback on form inputs with error messages displayed below each input.
+- Responsive UI with intuitive navigation and sidebar access based on user roles.
+
+![Alt Regitration form](./screenshot/MyBaseCamp.png)
 
 ### Core Features Implemented
 
 1. **User Authentication System**
 
-   - Secure registration with password validation (minimum 6 characters)
+   - Secure registration with password validation
    - Login/logout functionality with session management
    - Password encryption using BCrypt
    - Email uniqueness validation
@@ -47,15 +61,23 @@ Pagination for projects.
    - Pagination support for project listings
 
 3. **User Profile Management**
+
    - Security settings page
 
 4. **Administrative Dashboard**
+
    - Role-based access control (admin vs regular users)
    - Self-demotion prevention for admins
+
 5. **Database Design**
-   - Users table with secure authentication
-   - Projects table with ownership tracking
-   - Proper foreign key relationships and cascading deletes
+
+   - **Users Table**: stores user information including `username`, `email`, `password` (hashed), and `role` (ADMIN or USER) for role-based access control.
+   - **Projects Table**: stores project information including `name`, `description`, and `ownerId` (foreign key referencing `Users.id`) to track project ownership.
+   - **Associations & Constraints**:
+     - One-to-many relationship: a user can have many projects (`User.hasMany(Project)`).
+     - Each project belongs to a user (`Project.belongsTo(User)`).
+     - Proper foreign key constraints are set to maintain referential integrity.
+     - Cascading deletes: deleting a user automatically removes their associated projects.
 
 6. **User Experience Enhancements**
    - Responsive design with custom CSS
@@ -79,6 +101,7 @@ git clone https://git.us.qwasar.io/my_basecamp_1_200773_9nmm6_/my_basecamp_1
 
 cd ./my_basecamp_1
 ```
+
 ### Step 2: Install Dependencies
 
 ```bash
@@ -106,7 +129,7 @@ node server.js
    - Fill in username, email, and password (minimum 6 characters)
    - Submit to create your account
 
-   ![Alt Regitration form](./screenshot/Register-01.png)
+   ![Alt Regitration form](./screenshot/Register.png)
 
    **OR**
    if you will use the provided data
@@ -114,21 +137,27 @@ node server.js
    - use the following credentials:
 
    #### Admin User
-   - email: admin@mybasecamp.com
+
+   - email: admin@admin.com
    - password: "admin123"
 
-   ![login form](./screenshot/Login01.png)
+   #### User
 
-2. **Admin Dashboard**
+   - email: user@user.com
+   - password: "user123"
 
-   ![Admin dashbord](./screenshot/Project_admin_dashboard.png)
+   ![login form](./screenshot/Login.png)
+
+2. **Projects Dashboard**
+
+   ![Admin dashbord](./screenshot/Project_Admin.png)
 
    - After login, you'll see your projects dashboard
    - View all projects you own or are assigned to
-   - Projects are paginated (9 per page by default)
+   - Projects are paginated
 
 3. **Creating Projects**
-   ![Creating new project](./screenshot/Add_Project_User.png)
+   ![Creating new project](./screenshot/Add_Project.png)
 
    - Click "New Project" button
    - Fill in project details:
@@ -137,43 +166,60 @@ node server.js
    - Submit to create the project
 
 4. **Managing Projects**
+   ![Creating new project](./screenshot/Edit_project.png.png)
+   ![Creating new project](./screenshot/Detail_project.png.png.png)
+   ![Creating new project](./screenshot/confirm_delete_project.png.png.png.png)
 
-    ![Project Overview](./screenshot/Manage_Project.png)
    - Click on any project to view details
    - Edit project information and assignments
    - Delete projects (owners and admins only)
 
-5. **Admin Features** (Admin users only)
+5. **Managing Users**
+   ![Table of users](./screenshot/User_Admin.png)
+   ![Creating new user](./screenshot/Add_User.png)
 
-![Admin Dashboard](./screenshot/Project_admin_dashboard.png)
-- Access admin dashboard 
-- Manage all users
-- Promote/demote user roles
-  ![Admin Dashboard](./screenshot/Users_Admin.png)
+- Only **admins** can access the Users section and perform CRUD operations.
+- Admins can:
+  - View the list of all users.
+  - Create new users with a specific role (ADMIN or USER).
+  - Edit user information (username, email, role, password).
+  - Delete users if necessary.
+- Normal users **cannot access the Users section** and will see a "Forbidden" page if they try.
+- Each user can be assigned to projects as an owner. Only the **owner of a project or an admin** can edit or delete that project.
+
+![Forbidden page](./screenshot/Forbidden_page.png)
 
 ### API Endpoints Structure
+
 ```
 Authentication:
   POST /auth/login              - Registration page
   GET  /auth/me                 - Process login
-  POST /register                - Rregistration
+  POST /auth/register           - Rregistration
   POST /auth/logout             - Logout user
 
 Projects:
-  GET    /projects         - List all projects
-  GET    /projects/:id     - View project details
-  PUT    /projects/:id     - Update project
-  POST   /projects         - Create project
-  DELETE /projects/:id     - Delete project
+  GET    /api/projects         - List all projects
+  GET    /api/projects/:id     - View project details
+  PUT    /api/projects/:id     - Update project
+  POST   /api/projects         - Create project
+  DELETE /api/projects/:id     - Delete project
 
-Admin:
-  GET  /admin/users                  - List users
-  GET  /admin/users/new              - New user form
-  POST /admin/users                  - Create user
-  GET  /admin/users/:id              - View user
-  GET  /admin/users/:id/edit         - Edit user form
-  PUT  /admin/users/:id              - Update user
+Admin:/ Users Management (Role-Based, Admin Only):**
+  GET  /api/users                  - List users
+  POST /api/users                  - Create user
+  GET  /api/users/:id              - View user
+  PUT  /api/users/:id              - Update user
+  DELETE  /api/users/:id           - Delete user
 ```
+
+**Notes / Rules:**
+- Only **admins** can access `/api/users` endpoints.
+- Normal users cannot access the Users section; trying to do so returns `403 Forbidden`.
+- Every project has an **owner** (the user who created it).
+- Only the **owner** or an **admin** can edit or delete a project.
+- All API responses use JSON.
+
 
 ### The Core Team
 

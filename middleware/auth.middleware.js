@@ -1,15 +1,26 @@
-function isAuthenticated(req, res, next) {
-  if (!req.session || !req.session.user) {
-    return res.status(401).json({ message: "Unauthorized" });
+exports.isAuthenticatedPage = (req, res, next) => {
+  if (!req.session.user) {
+    return res.redirect("/login");
   }
   next();
-}
+};
 
-function isAdmin(req, res, next) {
-  if (!req.session || req.session.user.role !== "ADMIN") {
-    return res.status(403).json({ message: "Forbidden" });
+// للـ API + JS
+exports.isAuthenticatedApi = (req, res, next) => {
+  if (req.session.user) return next();
+  return res.status(401).json({ message: "Unauthorized" });
+};
+
+exports.isAdmin = (req, res, next) => {
+  if (req.session.user?.role !== "ADMIN") {
+    return res
+      .status(403)
+      .sendFile(path.join(__dirname, "../public/forbidden.html"));
   }
   next();
-}
+};
 
-module.exports = { isAuthenticated, isAdmin };
+exports.isAdminPage = (req, res, next) => {
+  if (req.session.user?.role === "ADMIN") return next();
+  return res.redirect("/403");
+};

@@ -11,9 +11,7 @@ const Project = db.define("Project", {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  description: {
-    type: DataTypes.TEXT,
-  },
+  description: DataTypes.TEXT,
   ownerId: {
     type: DataTypes.INTEGER,
     allowNull: false,

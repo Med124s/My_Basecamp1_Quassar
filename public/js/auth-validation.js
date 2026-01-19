@@ -1,212 +1,157 @@
 document.addEventListener("DOMContentLoaded", () => {
-  /* ================= UTILITIES ================= */
+  /* ================= HELPERS ================= */
+  const isEmailValid = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  const isPasswordStrong = (value) =>
+    /^(?=.*[A-Za-z])(?=.*\d).{6,}$/.test(value);
 
-  // function isValidEmail(email) {
-  //   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  // }
-
-  // function setError(input, message) {
-  //   const group = input.parentElement;
-  //   const errorText = group.querySelector(".error-text");
-  //   input.classList.add("error");
-  //   input.classList.remove("success");
-  //   errorText.textContent = message;
-  // }
-
-  // function setSuccess(input) {
-  //   const group = input.parentElement;
-  //   const errorText = group.querySelector(".error-text");
-  //   input.classList.remove("error");
-  //   input.classList.add("success");
-  //   errorText.textContent = "";
-  // }
-
-  // /* ================= LOGIN ================= */
-
-  // const loginForm = document.getElementById("loginForm");
-
-  // if (loginForm) {
-  //   const email = document.getElementById("email");
-  //   const password = document.getElementById("password");
-  //   const loginBtn = document.getElementById("loginBtn");
-
-  //   email.addEventListener("input", () => {
-  //     if (!email.value.trim())
-  //       setError(email, "Email is required");
-  //     else if (!isValidEmail(email.value))
-  //       setError(email, "Invalid email format");
-  //     else setSuccess(email);
-  //   });
-
-  //   password.addEventListener("input", () => {
-  //     if (!password.value.trim())
-  //       setError(password, "Password is required");
-  //     else if (password.value.length < 6)
-  //       setError(password, "Min 6 characters");
-  //     else setSuccess(password);
-  //   });
-
-  //   loginForm.addEventListener("submit", (e) => {
-  //     e.preventDefault();
-  //     email.dispatchEvent(new Event("input"));
-  //     password.dispatchEvent(new Event("input"));
-
-  //     if (
-  //       email.classList.contains("error") ||
-  //       password.classList.contains("error")
-  //     )
-  //       return;
-
-  //     // 🔥 LOGIN REQUEST
-  //     fetch("/auth/login", {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({
-  //         email: email.value,
-  //         password: password.value,
-  //       }),
-  //     }).then(() => (window.location.href = "/dashboard.html"));
-  //   });
-  // }
-
-  function isValidEmail(email) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  }
-
-  function setError(input, message) {
-    const group = input.parentElement;
-    const errorText = group.querySelector(".error-text");
+  const showError = (input, message) => {
+    const small = input.parentElement.querySelector("small");
+    if (small) small.innerText = message;
     input.classList.add("error");
     input.classList.remove("success");
-    if (errorText) errorText.textContent = message;
-  }
+  };
 
-  function setSuccess(input) {
-    const group = input.parentElement;
-    const errorText = group.querySelector(".error-text");
+  const showSuccess = (input) => {
+    const small = input.parentElement.querySelector("small");
+    if (small) small.innerText = "";
     input.classList.remove("error");
     input.classList.add("success");
-    if (errorText) errorText.textContent = "";
-  }
+  };
 
-  /* ================= LOGIN ================= */
-
+  /* ================= LOGIN FORM ================= */
   const loginForm = document.getElementById("loginForm");
-
   if (loginForm) {
     const email = document.getElementById("email");
     const password = document.getElementById("password");
 
-    email.addEventListener("input", () => {
-      if (!email.value.trim()) setError(email, "Email is required");
-      else if (!isValidEmail(email.value))
-        setError(email, "Invalid email format");
-      else setSuccess(email);
+    email.addEventListener("blur", () => {
+      if (!email.value.trim()) showError(email, "Email is required");
+      else if (!isEmailValid(email.value)) showError(email, "Invalid email");
+      else showSuccess(email);
     });
 
-    password.addEventListener("input", () => {
-      if (!password.value.trim()) setError(password, "Password is required");
-      else if (password.value.length < 6)
-        setError(password, "Min 6 characters");
-      else setSuccess(password);
+    password.addEventListener("blur", () => {
+      if (!password.value.trim()) showError(password, "Password is required");
+      else showSuccess(password);
     });
 
     loginForm.addEventListener("submit", async (e) => {
       e.preventDefault();
+      email.dispatchEvent(new Event("blur"));
+      password.dispatchEvent(new Event("blur"));
 
-      email.dispatchEvent(new Event("input"));
-      password.dispatchEvent(new Event("input"));
-
-      if (
-        email.classList.contains("error") ||
-        password.classList.contains("error")
-      ) {
+      if (email.classList.contains("error") || password.classList.contains("error"))
         return;
-      }
 
       try {
         const res = await fetch("/auth/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: email.value,
-            password: password.value,
-          }),
+          body: JSON.stringify({ email: email.value, password: password.value }),
         });
 
         if (!res.ok) {
-          setError(password, "Invalid email or password");
+          showError(password, "Invalid email or password");
           return;
         }
 
-        // ✅ LOGIN OK → REDIRECT
-        window.location.href = "/dashboard.html";
+        const data = await res.json();
+        localStorage.setItem("token", data.token);
+        window.location.href = "/dashboard";
       } catch (err) {
-        console.error(err);
-        alert("Server error");
+        alert("Server error. Try again.");
       }
     });
   }
 
-  /* ================= REGISTER ================= */
-
+  /* ================= REGISTER FORM ================= */
   const registerForm = document.getElementById("registerForm");
-
   if (registerForm) {
     const username = document.getElementById("username");
     const email = document.getElementById("email");
     const password = document.getElementById("password");
     const confirmPassword = document.getElementById("confirmPassword");
+    const formMessage = document.getElementById("formMessage");
 
-    username.addEventListener("input", () => {
-      if (!username.value.trim()) setError(username, "Username is required");
-      else if (username.value.length < 3)
-        setError(username, "Min 3 characters");
-      else setSuccess(username);
-    });
+    const validateUsername = () => {
+      if (!username.value.trim()) showError(username, "Username is required");
+      else if (username.value.trim().length < 3)
+        showError(username, "Min 3 characters");
+      else showSuccess(username);
+      return !username.classList.contains("error");
+    };
 
-    email.addEventListener("input", () => {
-      if (!email.value.trim()) setError(email, "Email is required");
-      else if (!isValidEmail(email.value))
-        setError(email, "Invalid email format");
-      else setSuccess(email);
-    });
+    const validateEmail = () => {
+      if (!email.value.trim()) showError(email, "Email is required");
+      else if (!isEmailValid(email.value)) showError(email, "Invalid email");
+      else showSuccess(email);
+      return !email.classList.contains("error");
+    };
 
-    password.addEventListener("input", () => {
-      if (!password.value) setError(password, "Password is required");
-      else if (password.value.length < 6)
-        setError(password, "Min 6 characters");
-      else setSuccess(password);
-    });
+    const validatePassword = () => {
+      if (!password.value.trim()) showError(password, "Password is required");
+      else if (!isPasswordStrong(password.value))
+        showError(password, "Min 6 chars, letters & numbers");
+      else showSuccess(password);
+      return !password.classList.contains("error");
+    };
 
-    confirmPassword.addEventListener("input", () => {
-      if (!confirmPassword.value)
-        setError(confirmPassword, "Confirm your password");
+    const validateConfirmPassword = () => {
+      if (!confirmPassword.value.trim())
+        showError(confirmPassword, "Please confirm password");
       else if (confirmPassword.value !== password.value)
-        setError(confirmPassword, "Passwords do not match");
-      else setSuccess(confirmPassword);
-    });
+        showError(confirmPassword, "Passwords do not match");
+      else showSuccess(confirmPassword);
+      return !confirmPassword.classList.contains("error");
+    };
 
-    registerForm.addEventListener("submit", (e) => {
+    username.addEventListener("blur", validateUsername);
+    email.addEventListener("blur", validateEmail);
+    password.addEventListener("blur", validatePassword);
+    confirmPassword.addEventListener("blur", validateConfirmPassword);
+
+    registerForm.addEventListener("submit", async (e) => {
       e.preventDefault();
+      formMessage.innerText = "";
+      formMessage.className = "form-message";
 
-      username.dispatchEvent(new Event("input"));
-      email.dispatchEvent(new Event("input"));
-      password.dispatchEvent(new Event("input"));
-      confirmPassword.dispatchEvent(new Event("input"));
+      const valid =
+        validateUsername() &&
+        validateEmail() &&
+        validatePassword() &&
+        validateConfirmPassword();
 
-      if (registerForm.querySelector(".error")) return;
+      if (!valid) return;
 
-      // 🔥 REGISTER REQUEST
-      fetch("/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          username: username.value,
-          email: email.value,
-          password: password.value,
-        }),
-      }).then(() => (window.location.href = "/login.html"));
+      try {
+        const res = await fetch("/auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username: username.value.trim(),
+            email: email.value.trim(),
+            password: password.value,
+          }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          formMessage.innerText = data.message || "Registration failed";
+          formMessage.classList.add("error");
+          return;
+        }
+
+        formMessage.innerText = "Account created! Redirecting to login...";
+        formMessage.classList.add("success");
+
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 1500);
+      } catch (err) {
+        formMessage.innerText = "Server error. Try again.";
+        formMessage.classList.add("error");
+      }
     });
   }
 });
