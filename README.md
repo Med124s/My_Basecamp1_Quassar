@@ -166,9 +166,10 @@ node server.js
    - Submit to create the project
 
 4. **Managing Projects**
-   ![Creating new project](./screenshot/Edit_project.png.png)
-   ![Creating new project](./screenshot/Detail_project.png.png.png)
-   ![Creating new project](./screenshot/confirm_delete_project.png.png.png.png)
+   ![Creating new project](./screenshot/Edit_project.png)
+   ![Creating new project](./screenshot/Detail_project.png)
+   ![Creating new project](./screenshot/confirm_delete_project.png)
+   ![Creating new project](./screenshot/toast_delete.png)
 
    - Click on any project to view details
    - Edit project information and assignments
